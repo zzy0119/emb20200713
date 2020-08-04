@@ -2,6 +2,12 @@
 
 #define BASEYEAR	1990 // 宏定义
 
+/*
+	函数的声明
+ */
+int is_leap(int year);
+int days_month(int m, int year);
+
 int main(void)
 {
 	int y, m;
@@ -17,7 +23,11 @@ int main(void)
 	// 计算BASEYEAR.1.1~y/m/1有多少天
 	// 1.[BASEYEAR,y) + [y.1,y.m)+1
 	for (i = BASEYEAR; i < y; i++) {
-		if (i % 4 == 0 && i % 100 != 0 || i % 400 == 0)	{
+		/*
+		 函数的调用
+		 	传递的是值！！！！
+		 */
+		if (is_leap(i))	{ // year = i
 			// 闰年
 			sumdays += 366; // sumdays = sumdays + 366;
 		} else {
@@ -25,27 +35,15 @@ int main(void)
 		}
 	}
 	for (i = 1; i < m; i++) {
-		if (i == 1 || i == 3 || i == 5 || i == 7 || i == 8 || \
-				i == 10 || i == 12)	
-			sumdays += 31;
-		else if (i == 4 || i == 6 || i == 9 || i == 11)
-			sumdays += 30;
-		else
-			sumdays += (y % 4 == 0 && y % 100 != 0 || y % 400 == 0 ? 29 : 28);
+		sumdays += days_month(i, y);
 	}
 	sumdays ++; // 1号
 
 	// y/m/1是星期几
 	firstday = sumdays % 7;
-// 	printf("%d\n", firstday);
 
 	// m月有多少天
-	if (m == 1 || m == 3 || m == 5 || m == 7 || m == 8 || m == 10 || m == 12)
-		monthdays = 31;
-	else if (m == 4 || m == 6 || m == 9 || m == 11)
-		monthdays = 30;
-	else
-		monthdays = (y % 4 == 0 && y % 100 != 0 || y % 400 == 0 ? 29 : 28);
+	monthdays = days_month(m, y);
 
 	// 打印日历
 	printf("     %d %d\n", m, y);
@@ -60,4 +58,36 @@ int main(void)
 
 	return 0;
 }
+
+// 根据给定的年份，判断是否为闰年
+/*
+   函数的定义
+	@year:带计算的年份
+	@return:0否 1是
+ */
+int is_leap(int year)
+{
+	return year % 4 == 0 && year % 100 != 0 || year % 400 == 0;
+}
+
+/*
+ 判断给定的月份有多少天
+ */
+int days_month(int m, int year)
+{
+	int monthdays;	
+
+	if (m == 1 || m == 3 || m == 5 || m == 7 || m == 8 || m == 10 || m == 12)
+		monthdays = 31;
+	else if (m == 4 || m == 6 || m == 9 || m == 11)
+		monthdays = 30;
+	else
+		monthdays = is_leap(year)+28;
+
+	return monthdays;
+}
+
+
+
+
 
