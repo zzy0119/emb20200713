@@ -2,7 +2,6 @@
 
 #define BASEYEAR	1990 // 宏定义
 
-
 int main(void)
 {
 	int y, m;
