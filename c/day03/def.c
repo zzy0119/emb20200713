@@ -14,6 +14,9 @@
 			y = t;\
 		}while(0)
 
+#define DEBUG
+#undef	DEBUG
+
 int main(void)
 {
 #if 0
@@ -27,6 +30,10 @@ int main(void)
 
 	res = SQUARE(n+2); // n+2*n+2
 	printf("res:%d\n", res);
+
+#ifdef DEBUG
+	printf("debug.....\n");
+#endif
 
 	SWAP2NUM(a, b);
 	printf("a:%d, b:%d\n", a, b);
