@@ -73,6 +73,7 @@ int mygetline(char **ptr)
 		scanf("%c", &ch);	
 		if (ch == '\n')
 			break;
+#if 0
 		new = malloc(len+1);	
 		memset(new, '\0', len+1);
 		strcpy(new, s);
@@ -81,17 +82,14 @@ int mygetline(char **ptr)
 		s = new;
 		i++;
 		len++;
+#endif
+		len ++;
+		new = realloc(s, len);
+		new[i] = ch;
+		i++;	
+		s = new;
 	}
 	*ptr = s;
 	return i;
 }
-
-
-
-
-
-
-
-
-
 
