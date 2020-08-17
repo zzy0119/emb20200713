@@ -44,5 +44,20 @@ pri:根据地址能够打印元素的函数的地址
  */
 void seq_traval(const seq_t *s, pri_t pri);
 
+/*
+ 修改指定元素
+ */
+int seq_update(seq_t *s, const void *key, cmp_t cmp, const void *newdata);
+
+/*
+ 销毁
+ */
+void seq_destroy(seq_t *s);
+
+/*
+ 查找指定元素
+ */
+void *seq_find(const seq_t *s, const void *key, cmp_t cmp);
+
 #endif
 

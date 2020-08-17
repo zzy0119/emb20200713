@@ -32,19 +32,29 @@ int seq_add(seq_t *s, const void *data)
 	return 0;
 }
 
+/*
+ 内部函数：找到指定元素的下标
+ */
+static int find_elm(const seq_t *s, const void *key, cmp_t cmp)
+{
+	int i = 0;
+
+	for (; i < s->nmemb; i++) {
+		if (cmp((char *)s->ptr+i*s->size, key) == 0)
+			return i;
+	}
+	return -1;
+}
+
+
 int seq_del(seq_t *s, const void *key, cmp_t cmp)
 {
 	int i;
 	char *start;
 	// 找
-	for (i = 0; i < s->nmemb; i++) {
-		if (cmp((char *)s->ptr+i*s->size, key) == 0)
-			break;
-	}
-	if (i == s->nmemb) {
-		// 没有要删除的元素
+	i = find_elm(s, key, cmp);
+	if (i == -1)
 		return -1;
-	}
 
 	// 删	
 	start = (char *)s->ptr;
@@ -67,4 +77,21 @@ void seq_traval(const seq_t *s, pri_t pri)
 	}
 }
 
+void seq_destroy(seq_t *s)
+{
+	free(s->ptr);
+	free(s);
+}
+
+int seq_update(seq_t *s, const void *key, cmp_t cmp, const void *newdata)
+{
+	int i;	
+
+	i = find_elm(s, key, cmp);
+	if (i == -1)
+		return -1;
+	memcpy((char *)s->ptr+i*s->size, newdata, s->size);	
+
+	return 0;
+}
 

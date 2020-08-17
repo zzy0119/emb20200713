@@ -34,7 +34,7 @@ static int age_cmp(const void *data, const void *key)
 
 int main(void)
 {
-	struct stu_st stu;
+	struct stu_st stu, newstu;
 	seq_t *p;
 	char *del_name = "stu8"; 
 	int del_age = 22;
@@ -55,6 +55,14 @@ int main(void)
 	printf("*************删除************\n");
 	seq_del(p, &del_age, age_cmp);
 	seq_traval(p, pri_stu);
+
+	printf("***********替换**************\n");
+	strcpy(newstu.name, "数据结构");
+	newstu.age = 30;
+	seq_update(p, "stu1", name_cmp, &newstu);
+	seq_traval(p, pri_stu);
+
+	seq_destroy(p);
 
 	return 0;
 }
