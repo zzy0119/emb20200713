@@ -39,6 +39,8 @@ int seq_del(seq_t *s, const void *key, cmp_t cmp);
 
 /*
  遍历
+s:表结构的地址
+pri:根据地址能够打印元素的函数的地址
  */
 void seq_traval(const seq_t *s, pri_t pri);
 
