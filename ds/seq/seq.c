@@ -95,3 +95,13 @@ int seq_update(seq_t *s, const void *key, cmp_t cmp, const void *newdata)
 	return 0;
 }
 
+void *seq_find(const seq_t *s, const void *key, cmp_t cmp)
+{
+	int i;
+
+	i = find_elm(s, key, cmp);
+	if (i == -1)
+		return NULL;
+
+	return (char *)s->ptr+i*s->size;
+}

@@ -38,6 +38,8 @@ int main(void)
 	seq_t *p;
 	char *del_name = "stu8"; 
 	int del_age = 22;
+	char *find_name = "stu15";
+	struct stu_st *find;
 
 	seq_init(sizeof(struct stu_st), &p);
 
@@ -61,6 +63,14 @@ int main(void)
 	newstu.age = 30;
 	seq_update(p, "stu1", name_cmp, &newstu);
 	seq_traval(p, pri_stu);
+
+	printf("***********查找**************\n");
+	find = seq_find(p, find_name, name_cmp);	
+	if (find == NULL)
+		printf("没有名字为%s的元\n", find_name);
+	else {
+		printf("找到了:%s, %d\n", find->name, find->age);
+	}
 
 	seq_destroy(p);
 
