@@ -11,7 +11,7 @@ struct node_st {
 typedef struct {
 	struct node_st head; // head.data不需要，head.next存储的第一个结点地址
 	int size;// 存储数据结点所存储的数据大小
-}lhead_t;
+}list_t;
 
 // 枚举
 typedef enum {
@@ -26,28 +26,42 @@ typedef void (*pri_t)(const void *data);
 /*
  初始化头结点
  */
-lhead_t *lhead_init(int size);
-//int lhead_init(int size, lhead_t **h);
+list_t *list_init(int size);
+//int list_init(int size, list_t **h);
 
 /*
  插入
  */
-int lhead_insert(lhead_t *h, const void *data, way_t way);
+int list_insert(list_t *h, const void *data, way_t way);
 
 /*
  删除
  */
-int lhead_delete(lhead_t *h, const void *key, cmp_t cmp);
+int list_delete(list_t *h, const void *key, cmp_t cmp);
 
 /*
  遍历
  */
-void lhead_traval(const lhead_t *h, pri_t pri);
+void list_traval(const list_t *h, pri_t pri);
 
 /*
  销毁 
  */
-void lhead_destroy(lhead_t *h);
+void list_destroy(list_t *h);
+
+/*
+ 修改
+ */
+int list_update(list_t *h, const void *key, cmp_t cmp, const void *newdata);
+
+/*
+ 返回第一个结点的数据
+ */
+void *list_firstnode(const list_t *h);
+/*
+ 最后一个结点的数据
+ */
+void *list_lastnode(const list_t *h);
 
 #endif
 

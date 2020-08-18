@@ -3,11 +3,11 @@
 #include <stdio.h>
 #include "list.h"
 
-lhead_t *lhead_init(int size)
+list_t *list_init(int size)
 {
-	lhead_t *me;
+	list_t *me;
 
-	me = malloc(sizeof(lhead_t));
+	me = malloc(sizeof(list_t));
 	if (NULL == me)
 		return NULL;
 	me->head.data = NULL;
@@ -20,7 +20,7 @@ lhead_t *lhead_init(int size)
 /*
  插入
  */
-int lhead_insert(lhead_t *h, const void *data, way_t way)
+int list_insert(list_t *h, const void *data, way_t way)
 {
 	struct node_st *new = NULL;
 	struct node_st *cur = NULL;
@@ -61,17 +61,32 @@ int lhead_insert(lhead_t *h, const void *data, way_t way)
 	return 0;
 }
 
-#if 0
 /*
  删除
  */
-int lhead_delete(lhead_t *h, const void *key, cmp_t cmp);
-#endif
+int list_delete(list_t *h, const void *key, cmp_t cmp)
+{
+	struct node_st *prev, *cur;
+
+	for (prev = &h->head, cur=prev->next; cur != &h->head; prev=cur, cur=cur->next) {
+		if (!cmp(key, cur->data)) {
+			break;
+		}
+	}
+	if (cur == &h->head)
+		return -1;
+	prev->next = cur->next;
+	cur->next = NULL;
+	free(cur->data);
+	free(cur);
+
+	return 0;
+}
 
 /*
  遍历
  */
-void lhead_traval(const lhead_t *h, pri_t pri)
+void list_traval(const list_t *h, pri_t pri)
 {
 	struct node_st *cur;
 
@@ -83,7 +98,7 @@ void lhead_traval(const lhead_t *h, pri_t pri)
 /*
  销毁 
  */
-void lhead_destroy(lhead_t *h)
+void list_destroy(list_t *h)
 {
 	struct node_st *del;	
 
