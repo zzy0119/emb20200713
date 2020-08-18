@@ -63,5 +63,10 @@ void *list_firstnode(const list_t *h);
  */
 void *list_lastnode(const list_t *h);
 
+/*
+ 转置
+ */
+void list_reverse(list_t *h);
+
 #endif
 

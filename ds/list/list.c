@@ -113,4 +113,58 @@ void list_destroy(list_t *h)
 	free(h);
 }
 
+int list_update(list_t *h, const void *key, cmp_t cmp, const void *newdata)
+{
+	struct node_st *cur;
+
+	for (cur = h->head.next; cur != &h->head; cur = cur->next) {
+		if (!cmp(key, cur->data))
+			break;
+	}
+	if (cur == &h->head)
+		return -1;
+	memcpy(cur->data, newdata, h->size);
+
+	return 0;
+}
+
+
+void *list_firstnode(const list_t *h)
+{
+	if (h->head.next == &h->head)
+		return NULL;
+	return (h->head.next)->data;
+}
+
+void *list_lastnode(const list_t *h)
+{
+	struct node_st *last;
+
+	if (h->head.next == &h->head)
+		return NULL;
+
+	for (last = h->head.next; last->next != &h->head; last = last->next)
+		;
+	return last->data;
+}
+
+void list_reverse(list_t *h)
+{
+	struct node_st *cur, *next;
+
+	if (h->head.next == &h->head)
+		return;
+	cur = (h->head.next)->next;// 第二个结点
+	next = cur->next;
+	// 是的原链表的第一个结点作为最后一个结点
+	(h->head.next)->next = &h->head;
+	while (cur != &h->head) {
+		cur->next = h->head.next;
+		h->head.next = cur; // 头插
+		cur = next;
+		next = next->next;
+	}
+
+}
+
 

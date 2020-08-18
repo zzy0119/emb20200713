@@ -20,6 +20,9 @@ int main(void)
 	int data[] = {3,2,1,6,7,9,8,4,5};
 	list_t *head = NULL;
 	int del_n = 2;
+	int update = 100;
+	int key = 7;
+	int *ret;
 
 	head = list_init(sizeof(int));
 	if (NULL == head)
@@ -40,6 +43,21 @@ int main(void)
 	printf("************删除***********\n");
 	del_n = 5;
 	list_delete(head, &del_n, cmp);
+	list_traval(head, show);
+
+	printf("**************修改****************\n");
+	list_update(head, &key, cmp, &update);
+	list_traval(head, show);
+	printf("***********第一个结点****************\n");
+	ret = (int *)list_firstnode(head);
+	if (ret != NULL)	
+		printf("%d\n", *ret);
+	ret = (int *)list_lastnode(head);
+	if (ret != NULL)
+		printf("%d\n", *ret);
+
+	printf("************转置*************\n");
+	list_reverse(head);
 	list_traval(head, show);
 
 	list_destroy(head);
