@@ -58,7 +58,7 @@ void *llist_pop(const llisthead_t *h);
 /*
  返回最后一个结点数据 
  */
-void llist_last(const llisthead_t *h);
+void *llist_last(const llisthead_t *h);
 
 /*
  返回链表的结点个数
