@@ -91,4 +91,48 @@ void llist_destroy(llisthead_t *h)
 	free(h);
 }
 
+void *llist_pop(const llisthead_t *h)
+{
+	if (h->head.next == &h->head && h->head.prev == &h->head)
+		return NULL;
+	return (h->head.next)->data;
+}
+
+void *llist_last(const llisthead_t *h)
+{
+	if (h->head.next == &h->head && h->head.prev == &h->head)
+		return NULL;
+	return (h->head.prev)->data;
+}
+
+int llist_all_membs(const llisthead_t *h)
+{
+	struct node_st *cur;
+	int n = 0;
+
+	for (cur = h->head.next; cur != &h->head; cur = cur->next) {
+		n ++;
+	}
+
+	return n;
+}
+
+int llist_fetch(llisthead_t *h, const void *key, cmp_t *cmp, void *data)
+{
+	struct node_st *cur;	
+
+	for (cur = h->head.next; cur != &h->head; cur = cur->next) {
+		if (!cmp(cur->data, key)) {
+			memcpy(data, cur->data, h->size);
+			delete(cur);
+			return 0;
+		}
+	}
+
+	return -1;
+}
+
+
+
+
 

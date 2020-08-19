@@ -50,5 +50,25 @@ void llist_traval(const llisthead_t *h, pri_t pri);
  */
 void llist_destroy(llisthead_t *h);
 
+/*
+ 返回第一个结点数据  
+ */
+void *llist_pop(const llisthead_t *h);
+
+/*
+ 返回最后一个结点数据 
+ */
+void llist_last(const llisthead_t *h);
+
+/*
+ 返回链表的结点个数
+ */
+int llist_all_membs(const llisthead_t *h);
+
+/*
+ 返回给定结点的数据(通过参数回填数据)并将其删除
+ */
+int llist_fetch(llisthead_t *h, const void *key, cmp_t *cmp, void *data);
+
 #endif
 
