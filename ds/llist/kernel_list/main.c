@@ -24,12 +24,30 @@ int main(void)
 		list_add_tail(&data->node, &head);
 	}
 
+	// 删除
+	list_for_each(pos, &head) {
+		data = list_entry(pos, struct node_st, node);
+		if (data->score == 95) {
+			list_del(pos);
+			free(data);
+			break;
+		}
+	}
+
 	// 遍历	
 	list_for_each(pos, &head) {
 		data = list_entry(pos, struct node_st, node);
 		printf("%d ", data->score);
 	}
 	printf("\n");
+
+	// 释放
+	list_for_each_del(pos, &head) {
+		list_del(pos);	
+		data = list_entry(pos, struct node_st, node);
+		printf("%d is will be destroy\n", data->score);
+		free(data);
+	}
 
 	return 0;
 }
