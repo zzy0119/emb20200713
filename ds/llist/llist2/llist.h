@@ -70,5 +70,7 @@ int llist_all_membs(const llisthead_t *h);
  */
 int llist_fetch(llisthead_t *h, const void *key, cmp_t *cmp, void *data);
 
+int llist_empty(const llisthead_t *h);
+
 #endif
 

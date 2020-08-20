@@ -1,7 +1,8 @@
 #ifndef __LQUEUE_H
 #define __LQUEUE_H
 
-#include "/home/zzy/code20200713/emb20200713/ds/llist/llist2/llist.h"
+// #include "/home/zzy/code20200713/emb20200713/ds/llist/llist2/llist.h"
+#include <llist.h>
 
 typedef llisthead_t lqueue_t;
 
