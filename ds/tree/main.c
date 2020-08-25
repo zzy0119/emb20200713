@@ -83,13 +83,23 @@ static struct node_st **find_node(struct node_st **root, int key)
 }
 
 // 找到最大结点
-static struct node_st *find_max(struct node_st *root)
+static struct node_st *find_max(const struct node_st *root)
 {
 	if (root == NULL)
 		return NULL;
 	if (root->right == NULL)
-		return root;
+		return (void *)root;
 	find_max(root->right);
+}
+
+// 求得一颗树中的最小结点
+static struct node_st *find_min(const struct node_st *root)
+{
+	if (root == NULL)
+		return NULL;
+	if (root->left == NULL)
+		return (void *)root;
+	find_min(root->left);
 }
 
 // 删除指定结点
@@ -111,6 +121,8 @@ static void delete_node(struct node_st **f)
 	free(cur);
 }
 
+
+// 删除指定结点
 int remove_node(struct node_st **root, int key)
 {
 	// 找到指向待删除结点的指针	
@@ -123,9 +135,89 @@ int remove_node(struct node_st **root, int key)
 	return 0;
 }
 
+// 销毁
+void destroy_tree(struct node_st **root)
+{
+	if (*root == NULL)	
+		return ;
+	destroy_tree(&(*root)->left);
+	destroy_tree(&(*root)->right);
+
+//	printf("%d will be destroyed\n", (*root)->data.id);
+	free(*root);
+	*root = NULL;
+}
+
+// 调式 打印树
+void draw_tree(struct node_st *root, int col)
+{
+	if (root == NULL)		
+		return ;
+	draw_tree(root->right, col+1);
+	for (int i = 0; i < col; i++) {
+		printf("    ");
+	}
+	printf("%d\n", root->data.id);
+	draw_tree(root->left, col+1);
+}
+
+// 树的结点的个数
+int tree_nodes(const struct node_st *root)
+{
+	if (root == NULL)
+		return 0;
+	return tree_nodes(root->left) + tree_nodes(root->right) + 1;
+}
+
+static void tree_turn_right(struct node_st **root)
+{
+	struct node_st *cur, *l;
+
+	cur = *root;
+	l = cur->left;
+
+	*root = l;
+	cur->left = NULL;
+	find_max(l)->right = cur;
+}
+
+static void tree_turn_left(struct node_st **root)
+{
+	struct node_st *cur, *r;
+
+	cur = *root;
+	r = cur->right;
+
+	*root = r;
+	cur->right = NULL;
+	find_min(r)->left = cur;
+}
+// 平衡二叉树
+void tree_balance(struct node_st **root)
+{
+	int n;
+
+	if (*root == NULL)	
+		return ;
+	while (1) {
+		n = tree_nodes((*root)->left) - tree_nodes((*root)->right);
+		if (n > 1) {
+			// 向右转
+			tree_turn_right(root);
+		}
+		if (n < -1) {
+			// 向左转
+			tree_turn_left(root);
+		} else 
+			break;
+	}
+	tree_balance(&(*root)->left);
+	tree_balance(&(*root)->right);
+}
+
 int main(void)
 {
-	int arr[] = {5,4,8,10,6,9,7,3,1,2};
+	int arr[] = {1,2,3,4,5,6,7,8,9,10};
 	struct node_st *tree = NULL;
 	struct data_st n;
 
@@ -136,6 +228,7 @@ int main(void)
 
 	traval_mid(tree);
 
+#if 0
 	// 删除
 	printf("****************删除*****************\n");
 	remove_node(&tree, 6);
@@ -146,6 +239,14 @@ int main(void)
 	printf("****************删除*****************\n");
 	remove_node(&tree, 2);
 	traval_mid(tree);
+#endif
+	draw_tree(tree, 0);
+
+	printf("***************平衡******************\n");
+	tree_balance(&tree);
+	draw_tree(tree, 0);
+
+	destroy_tree(&tree);
 
 	return 0;
 }
