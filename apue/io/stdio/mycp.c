@@ -18,7 +18,7 @@ int main(int argc, char *argv[])
 	}
 	wfp = fopen(argv[2], "w");
 	if (NULL == wfp) {
-		printf("fopen() failed\n");
+		fprintf(stderr, "fopen() failed\n");
 		goto ERROR2;
 	}
 
