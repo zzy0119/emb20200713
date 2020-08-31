@@ -4,17 +4,22 @@
 #include <pwd.h>
 #include <fcntl.h>
 #include <grp.h>
+#include <time.h>
+
+#define BUFSIZE	64
 
 int main(int argc, char *argv[])
 {
 	struct stat res;
 	struct passwd *pw;
 	struct group *grp;
+	struct tm *tmp;
+	char buf[BUFSIZE] = {};
 
 	if (argc < 2)
 		return 1;
 
-	if (stat(argv[1], &res) == -1) {
+	if (lstat(argv[1], &res) == -1) {
 		perror("stat()");
 		return 1;
 	}
@@ -59,6 +64,13 @@ int main(int argc, char *argv[])
 	// if error
 	printf("%s ", grp->gr_name);
 
+	// 文件的字节个数 != 所占用磁盘空间大小(块 4k)
+	printf("%ld ", res.st_size);
+
+	// 文件最后一次修改时间
+	tmp = localtime(&res.st_mtime);
+	strftime(buf, BUFSIZE-1, "%m %d %H:%M", tmp);
+	printf("%s ", buf);
 
 	printf("\n");
 
