@@ -8,7 +8,7 @@ int main(int argc, char *argv[])
 	if (argc < 2)
 		return 0;
 
-	glob(argv[1], 0, NULL, &res);
+	glob(argv[1], GLOB_NOSORT | GLOB_NOCHECK, NULL, &res);
 
 	for (int i = 0; i < res.gl_pathc; i++)
 		puts((res.gl_pathv)[i]);
