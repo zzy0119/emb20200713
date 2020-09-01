@@ -3,6 +3,8 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <string.h>
+#include <errno.h>
 
 #define BUFSIZE	100
 
@@ -15,7 +17,8 @@ int main(int argc, char *argv[])
 		return 1;
 	fd = open(argv[1], O_RDONLY);
 	if (fd == -1) {
-		fprintf(stderr, "open() failed\n");
+	// 	fprintf(stderr, "open():%s\n", strerror(errno));
+		perror("open()");	
 		return 1;
 	}
 

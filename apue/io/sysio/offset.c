@@ -14,7 +14,7 @@ int main(int argc, char *argv[])
 	if (argc < 2)			
 		return 1;
 
-	fd = open(argv[1], O_RDONLY);
+	fd = open(argv[1], O_RDWR);
 	// if error
 	read(fd, buf, 3);
 	puts(buf);
@@ -23,6 +23,9 @@ int main(int argc, char *argv[])
 	memset(buf, '\0', 10);
 	read(fd, buf, 9);
 	puts(buf);
+
+	lseek(fd, 1024, SEEK_END);
+	write(fd, "world", 5);
 	
 	close(fd);
 

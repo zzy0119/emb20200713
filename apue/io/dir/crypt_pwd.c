@@ -2,8 +2,8 @@
 #include <shadow.h>
 #include <unistd.h>
 #include <string.h>
+#include <crypt.h>
 
-#define _XOPEN_SOURCE       /* See feature_test_macros(7) */
 #define NAMESIZE	32
 
 int main(void)
