@@ -5,6 +5,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <sys/select.h>
 
 #define TTY1	"/dev/tty9"
 #define TTY2	"/dev/tty10"
@@ -56,6 +57,7 @@ int create_fsm(int fd1, int fd2)
 	// 构建使用的两个状态机
 	fsm_t fsm12, fsm21;
 	int fd1_state, fd2_state;
+	fd_set rset, wset;
 
 	// 获取fd1 fd2文件的状态 + 非阻塞
 	fd1_state = fcntl(fd1, F_GETFL);
@@ -78,11 +80,47 @@ int create_fsm(int fd1, int fd2)
 	// 推动状态机运行
 	// 轮询
 	while (fsm12.state != STATE_T && fsm21.state != STATE_T) {
-		fsm_drive(&fsm12);
-		fsm_drive(&fsm21);
+		if (fsm12.state == STATE_E) {
+			fsm_drive(&fsm12);
+			continue;
+		}
+		if (fsm21.state == STATE_E) {
+			fsm_drive(&fsm21);
+			continue;
+		}
+
+		// 初始化文件描述符集
+		FD_ZERO(&rset);
+		FD_ZERO(&wset);
+		if (fsm12.state == STATE_R) {
+			FD_SET(fsm12.rfd, &rset);
+		} else if (fsm12.state == STATE_W) {
+			FD_SET(fsm12.wfd, &wset);
+		}
+		if (fsm21.state == STATE_R) {
+			FD_SET(fsm21.rfd, &rset);
+		} else if (fsm21.state == STATE_W) {
+			FD_SET(fsm21.wfd, &wset);
+		}
+
+		if (select((fd1 > fd2 ? fd1 : fd2)+1, &rset, &wset, NULL, NULL) == -1) {
+			perror("setlect()");
+			goto ERROR;
+		}
+
+		if (FD_ISSET(fsm12.rfd, &rset) || FD_ISSET(fsm12.wfd, &wset))
+			fsm_drive(&fsm12); // r tty1  w tty2
+		if (FD_ISSET(fsm21.rfd, &rset) || FD_ISSET(fsm21.wfd, &wset))
+			fsm_drive(&fsm21); // r tty2 w tty1
 	}
 
+	fcntl(fd1, F_SETFL, fd1_state);
+	fcntl(fd2, F_SETFL, fd2_state);
 	return 0;
+ERROR:
+	fcntl(fd1, F_SETFL, fd1_state);
+	fcntl(fd2, F_SETFL, fd2_state);
+	return -1;
 }
 
 // 状态机状态改变
@@ -131,15 +169,4 @@ int fsm_drive(fsm_t *fsm)
 	}
 
 }
-
-
-
-
-
-
-
-
-
-
-
 
