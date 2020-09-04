@@ -4,6 +4,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <sys/wait.h>
 
 int main(void)
 {
@@ -32,10 +33,13 @@ int main(void)
 
 		close(fd);
 
+		sleep(1);
+
 		exit(0);
 	}
 
-	sleep(3);
+	// 等待子进程终止---->收尸
+	wait(NULL);
 
 	printf("子进程已终止buf:\n");
 	puts(buf);
