@@ -35,8 +35,6 @@ int main(void)
 		exit(1);
 	}
 
-	// 连接
-	openlog("mydaemon.c", LOG_PID | LOG_PERROR, LOG_DAEMON);
 	// 提交日志
 	syslog(LOG_INFO, "my daemon process successfully");
 	
