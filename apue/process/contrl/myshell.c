@@ -25,14 +25,15 @@ int main(void)
 			break;
 		// "ls -l"--->"ls" "-l" glob(3)GLOB_NOCHCK
 		// 按空格和换行切割字符串 strsep(3) /strtok(3) 
-		parse_str(ptr, &globres);
+//		parse_str(ptr, &globres);
 #if 0
 		for (int i = 0; i < globres.gl_pathc; i++)
 			puts((globres.gl_pathv)[i]);
 #endif
 		pid = fork();
 		if (pid == 0) {
-			execvp((globres.gl_pathv)[0], globres.gl_pathv);
+//			execvp((globres.gl_pathv)[0], globres.gl_pathv);
+			execl("/bin/sh", "sh", "-c", ptr, NULL);
 			perror("execvp()");
 			exit(1);
 		}
