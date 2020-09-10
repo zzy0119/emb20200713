@@ -16,15 +16,19 @@ int main(void)
 	sigemptyset(&set);
 	sigaddset(&set, SIGINT);
 
+	sigprocmask(SIG_BLOCK, &set, &oldset);
 	for (int row = 0; row < 10; row++) {
-		sigprocmask(SIG_BLOCK, &set, &oldset);
 		for (int col = 0; col < 10; col ++) {
 			write(1, "*", 1);	
 			sleep(1);
 		}
 		write(1, "\n", 1);
-		sigprocmask(SIG_UNBLOCK, &set, NULL);
-		pause();
+		sigsuspend(&oldset);
+		/*
+		 sigprocmask(SIG_SETMASK, &oldset, &save);
+		 pause();
+		 sigprocmask(SIG_SETMASK, &save, NULL);
+		 */
 	}
 
 	exit(0);
