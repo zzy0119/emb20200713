@@ -32,7 +32,7 @@ int main(void)
 
 	// 读
 	while (1) {
-		if (msgrcv(msgid, &rcvbuf, MSGSIZE, 0, 0) == -1) {
+		if (msgrcv(msgid, &rcvbuf, MSGSIZE, -5, 0) == -1) {
 			perror("msgrcv()");
 			exit(1);
 		}
