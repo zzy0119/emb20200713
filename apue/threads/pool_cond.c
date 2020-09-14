@@ -11,6 +11,7 @@
 // 多线程竞争的变量
 static int job = 0;
 static pthread_mutex_t mut = PTHREAD_MUTEX_INITIALIZER; // 多线程存取job时候同步
+static pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
 
 static void *thr_jobs(void *s);
 
@@ -42,22 +43,20 @@ int main(void)
 		pthread_mutex_lock(&mut);
 		while (job != 0) {
 			// 上一次发放的任务还未取走
-			pthread_mutex_unlock(&mut);
-			scheld_yield();// 出让调度器
-			pthread_mutex_lock(&mut);
+			pthread_cond_wait(&cond, &mut);
 		}
 		job = i;
+		pthread_cond_broadcast(&cond);
 		pthread_mutex_unlock(&mut);
 	}
 	// 所有任务发放完成
 	pthread_mutex_lock(&mut);
 	while (job > 0) {
 		// 最后一个任务未被取走
-		pthread_mutex_unlock(&mut);
-		scheld_yield();
-		pthread_mutex_lock(&mut);
+		pthread_cond_wait(&cond, &mut);
 	}
 	job = -1;
+	pthread_cond_broadcast(&cond);
 	pthread_mutex_unlock(&mut);
 
 	// 收尸
@@ -77,19 +76,18 @@ static void *thr_jobs(void *s)
 
 	while (1) {
 		pthread_mutex_lock(&mut);
+		while (job == 0) {
+			// 未方放
+			pthread_cond_wait(&cond, &mut);
+		}
 		if (job == -1) {
 			pthread_mutex_unlock(&mut);
 			break;
 		}
-		if (job == 0) {
-			// 未方放
-			pthread_mutex_unlock(&mut);
-			scheld_yield();
-			continue;
-		}
 		// 去任务
 		myjob = job;
 		job = 0;
+		pthread_cond_signal(&cond);
 		pthread_mutex_unlock(&mut);
 		if (is_primer(myjob))
 			printf("%d is a primer\n", myjob);
