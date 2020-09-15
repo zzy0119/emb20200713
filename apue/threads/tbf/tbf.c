@@ -81,6 +81,8 @@ int tbf_init(int cps, int burst)
 	t->cps = cps;
 	t->burst = burst;
 	t->token = 0;
+	pthread_mutex_init(&t->token_mut, NULL);
+	pthread_cond_init(&t->token_cond, NULL);
 
 	pthread_mutex_lock(&mut);
 	pos = get_free_pos_unlocked();
