@@ -23,6 +23,12 @@ static void *thrs(void *arg)
 int main(void)
 {
 	int err;
+	pthread_attr_t attr;
+
+#if 0
+	pthread_attr_init(&attr);
+	pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
+#endif
 
 	err = pthread_create(&tid, NULL, thrs, NULL);
 	if (err) {
@@ -30,8 +36,14 @@ int main(void)
 		exit(1);
 	}
 
+	pthread_detach(tid);
+
 	// 收尸
-	pthread_join(tid, NULL);
+	err = pthread_join(tid, NULL);
+	if (err) {
+		fprintf(stderr, "pthread_join():%s\n", strerror(err));
+		exit(1);
+	}
 
 	for (int i = 0; i < 10; i ++) {
 		write(1, "!", 1);
