@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
 
 	raddr.sin_family = AF_INET;
 	inet_aton(SERVERIP, &raddr.sin_addr);
-	raddr.sin_port = SERVERPORT;
+	raddr.sin_port = htons(SERVERPORT);
 	sendto(sd, argv[1], strlen(argv[1])+1, 0, (struct sockaddr *)&raddr, sizeof(raddr));
 
 	close(sd);
