@@ -18,6 +18,7 @@ int main(void)
 	socklen_t len;
 	int newsd;
 	struct msg_st rcvbuf;
+	pid_t pid;
 
 	sd = socket(AF_INET, SOCK_STREAM, 0);
 	if (sd == -1) {
@@ -50,12 +51,20 @@ int main(void)
 			goto ERROR;
 		}
 
-		memset(&rcvbuf, 0, sizeof(rcvbuf));
-		recv(newsd, &rcvbuf, sizeof(rcvbuf), 0);
-		printf("from ip:%s, port:%d, msg id:%d, name:%s\n", \
-				inet_ntoa(remote_addr.sin_addr), ntohs(remote_addr.sin_port), \
-				rcvbuf.id, rcvbuf.name);
-		close(newsd);
+		pid = fork();
+		if (pid == -1) {
+			perror("fork()");
+			exit(1);
+		}
+		if (pid == 0) {
+			memset(&rcvbuf, 0, sizeof(rcvbuf));
+			recv(newsd, &rcvbuf, sizeof(rcvbuf), 0);
+			printf("from ip:%s, port:%d, msg id:%d, name:%s\n", \
+					inet_ntoa(remote_addr.sin_addr), ntohs(remote_addr.sin_port), \
+					rcvbuf.id, rcvbuf.name);
+			close(newsd);
+			exit(0);	
+		}
 	}
 
 	close(sd);
