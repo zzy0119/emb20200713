@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 #include <errno.h>
 #include <unistd.h>
 #include <netinet/in.h>
@@ -49,7 +50,8 @@ int main(void)
 			goto ERROR;
 		}
 
-		recv(newsd, &rcvbuf, sizeof(&rcvbuf), 0);
+		memset(&rcvbuf, 0, sizeof(rcvbuf));
+		recv(newsd, &rcvbuf, sizeof(rcvbuf), 0);
 		printf("from ip:%s, port:%d, msg id:%d, name:%s\n", \
 				inet_ntoa(remote_addr.sin_addr), ntohs(remote_addr.sin_port), \
 				rcvbuf.id, rcvbuf.name);
