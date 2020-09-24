@@ -8,6 +8,7 @@
 #include <netinet/ip.h>
 #include <arpa/inet.h>
 #include <unistd.h>
+#include <sqlite3.h>
 
 #include "proto.h"
 
@@ -24,6 +25,9 @@ int main(void)
 	struct rgs_st rcvbuf;
 	struct sigaction act;
 	pid_t pid;
+	sqlite3 *db;
+	const char *sqlp;
+	char *errmsg = NULL;
 
 	// 子进程终止时不会成为僵尸进程
 	act.sa_handler = SIG_DFL;
@@ -37,6 +41,23 @@ int main(void)
 		fprintf(stderr, "socket_init():%s\n", strerror(err));
 		exit(1);
 	}
+
+	// 创建注册表
+	ret = sqlite3_open("./server.db", &db);
+	if (ret != SQLITE_OK) {
+		fprintf(stderr, "sqlite3_open() failed\n");
+		close(sd);
+		exit(0);
+	}
+	sqlp = "create table if not exists rgsTables(count text not null primary key, password text not null)";
+	ret = sqlite3_exec(db, sqlp, NULL, NULL, &errmsg);
+	if (ret != SQLITE_OK) {
+		fprintf(stderr, "sqlite3_exec(): %s\n", errmsg);
+		close(sd);
+		sqlite3_close(db);
+		exit(1);
+	}
+	sqlite3_close(db);
 
 	// 等待接受客户端注册请求
 	client_addrlen = sizeof(client_addr);
