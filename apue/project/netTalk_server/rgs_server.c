@@ -13,6 +13,7 @@
 #include "proto.h"
 
 #define __DEBUG
+#define BUFSIZE	1024
 
 int socket_init(const char *ip, short port, int *sd);
 int is_rgs_ok();
@@ -80,7 +81,7 @@ int main(void)
 		}
 		if (pid == 0) {
 			// 判断能否注册---》发送客户端
-			ret = is_rgs_ok();	
+			ret = is_rgs_ok(rcvbuf);	
 			if (ret == 0) {
 				rcvbuf.rgsState = RGS_OK;
 			} else if (ret == 1) {
@@ -116,8 +117,55 @@ int socket_init(const char *ip, short port, int *sd)
 	return 0;	
 }
 
-int is_rgs_ok()
+int is_rgs_ok(struct rgs_st rcvbuf)
 {
+	sqlite3 *db;
+	int ret;
+	sqlite3_stmt *stmt = NULL;
+	char *sql;
+	char buf[BUFSIZE] = {};
+
+	// 打开数据库 查注册表中是否有rcvbuf.cnt账号
+	ret = sqlite3_open("./server.db", &db);
+	if (ret != SQLITE_OK) {
+		fprintf(stderr, "sqlite3_open() failed\n");
+		exit(0);
+	}
+	sql = "select * from rgsTables where count=?";
+	sqlite3_prepare(db, sql, -1, &stmt, NULL);
+	sqlite3_bind_text(stmt, 1, rcvbuf.cnt, -1, NULL);
+	ret = sqlite3_step(stmt);
+	if (ret == SQLITE_ERROR) {
+		fprintf(stderr, "sqlite3_step() error\n");
+		goto ERROR;
+	}
+	if (ret == SQLITE_ROW) {
+		// 有 返回1
+		sqlite3_finalize(stmt); // 释放stmt结构
+		sqlite3_close(db);
+
+		return 1;
+	}
+	// 没有  返回0 并将此账号插入表中	
+	snprintf(buf, BUFSIZE, "insert into rgsTables(count, password) values('%s', '%s')",rcvbuf.cnt, rcvbuf.pwd);
+	ret = sqlite3_exec(db, buf, NULL, NULL, NULL);
+	if (ret != SQLITE_OK) {
+		fprintf(stderr, "sqlite3_exec() error\n");
+		goto ERROR;
+	}
+
+	sqlite3_finalize(stmt); // 释放stmt结构
+	sqlite3_close(db);
 	return 0;
+ERROR:
+	sqlite3_finalize(stmt); // 释放stmt结构
+	sqlite3_close(db);
+	return -1;
 }
+
+
+
+
+
+
 
